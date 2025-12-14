@@ -2,8 +2,14 @@
 PyQt6>=6.10.0
 mss>=6.2.0
 paddleocr>=2.6.0
+paddlepaddle>=2.6.0
 Pillow>=10.0.0
 rich>=13.3.0
+openvino>=2024.4.0
+PyYAML>=6.0
+pynput>=1.7.6
+openai>=1.0.0
+pyperclip>=1.8.2
 
 # Dev dependencies can be installed via `pip install -e .[dev]`
 # pytest>=7.0
