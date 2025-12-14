@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from PyQt6.QtCore import Qt, QRect, QPoint, pyqtSignal
 from PyQt6.QtGui import QPainter, QColor, QPen, QBrush
-from PyQt6.QtWidgets import QWidget, QApplication
+from PyQt6.QtWidgets import QWidget
+from translator.capture.geometry import rect_to_device_pixels, virtual_desktop_geometry
 
 
 class RegionSelector(QWidget):
@@ -27,9 +28,7 @@ class RegionSelector(QWidget):
 
     def start_selection(self) -> None:
         """Show the overlay and start selection process."""
-        # TODO: Support multi-monitor setup by using virtual desktop geometry
-        screen_geometry = QApplication.primaryScreen().geometry()
-        self.setGeometry(screen_geometry)
+        self.setGeometry(virtual_desktop_geometry())
         self._start_pos = None
         self._current_pos = None
         self._selection_rect = None
@@ -54,7 +53,8 @@ class RegionSelector(QWidget):
             if self._selection_rect and self._selection_rect.isValid():
                 # Normalize rect
                 rect = self._selection_rect.normalized()
-                self.region_selected.emit((rect.x(), rect.y(), rect.width(), rect.height()))
+                
+                self.region_selected.emit(rect_to_device_pixels(rect))
             self.close()
 
     def keyPressEvent(self, event) -> None:

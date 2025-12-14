@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import time
+import threading
 from typing import Callable
 from pynput import keyboard
 from translator.utils.logger import get_logger
@@ -39,12 +40,15 @@ class GlobalHotkey:
             if now - self._last_space_time < 0.3:
                 logger.info("Double space detected!")
                 if self._on_double_space:
-                    # Run in a separate way or ensure it doesn't block listener?
-                    # Listener is a thread. Callback should be fast or dispatch to main thread.
-                    try:
-                        self._on_double_space()
-                    except Exception as e:
-                        logger.error(f"Error in hotkey callback: {e}")
+                    # Run in a separate thread to avoid blocking the listener
+                    threading.Thread(target=self._safe_callback, daemon=True).start()
                 self._last_space_time = 0.0 # Reset
             else:
                 self._last_space_time = now
+
+    def _safe_callback(self) -> None:
+        try:
+            if self._on_double_space:
+                self._on_double_space()
+        except Exception as e:
+            logger.error(f"Error in hotkey callback: {e}")

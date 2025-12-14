@@ -22,8 +22,8 @@ class ClipboardController:
         # Wait for clipboard update
         # Retry a few times
         text = ""
-        for _ in range(5):
-            time.sleep(0.1)
+        for _ in range(10): # Increased retries
+            time.sleep(0.05)
             text = pyperclip.paste()
             if text:
                 break
@@ -35,15 +35,13 @@ class ClipboardController:
             
         return text
 
-    def undo_spaces(self) -> None:
-        """Sends Ctrl+Z twice to undo the double space."""
-        # Undo twice
-        for _ in range(2):
-            with self.keyboard.pressed(Key.ctrl):
-                self.keyboard.press('z')
-                self.keyboard.release('z')
-            time.sleep(0.05)
-
+    def select_all(self) -> None:
+        """Sends Ctrl+A to select all text."""
+        with self.keyboard.pressed(Key.ctrl):
+            self.keyboard.press('a')
+            self.keyboard.release('a')
+        time.sleep(0.05)
+    
     def paste_text(self, text: str) -> None:
         pyperclip.copy(text)
         with self.keyboard.pressed(Key.ctrl):

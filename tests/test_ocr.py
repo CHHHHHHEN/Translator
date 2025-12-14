@@ -1,9 +1,10 @@
 import pytest
 import numpy as np
 from unittest.mock import MagicMock, patch
+import onnxruntime as ort
 
 from translator.ocr.paddle import PaddleOcrEngine
-from translator.ocr.preprocess import preprocess
+from translator.ocr.preprocess import preprocess, preprocess_rec
 
 
 def test_preprocess_returns_same_bytes() -> None:
@@ -11,43 +12,39 @@ def test_preprocess_returns_same_bytes() -> None:
     assert preprocess(payload) is payload
 
 
-def test_paddle_engine_preprocess_shape() -> None:
-    # Mock engine to access preprocess without loading model
-    with patch("translator.ocr.paddle.ov.Core"):
-        engine = PaddleOcrEngine()
-        # Create a dummy image (H, W, C)
-        img = np.zeros((100, 200, 3), dtype=np.uint8)
-        processed = engine.preprocess(img)
-        
-        # Check shape: [1, 3, 48, W]
-        assert processed.shape[0] == 1
-        assert processed.shape[1] == 3
-        assert processed.shape[2] == 48
-        # Width should be scaled. 100->48 (scale 0.48). 200*0.48 = 96.
-        assert processed.shape[3] == 96
+def test_preprocess_rec_shape() -> None:
+    # Create a dummy image (H, W, C)
+    img = np.zeros((100, 200, 3), dtype=np.uint8)
+    processed = preprocess_rec(img)
+    
+    # Check shape: [1, 3, 48, W]
+    assert processed.shape[0] == 1
+    assert processed.shape[1] == 3
+    assert processed.shape[2] == 48
+    # Width should be scaled. 100->48 (scale 0.48). 200*0.48 = 96.
+    assert processed.shape[3] == 96
 
 
-def test_extract_text_returns_error_if_no_model() -> None:
-    with patch("translator.ocr.paddle.ov.Core") as mock_core:
-        # Mock read_model to raise exception to simulate failure
-        mock_core.return_value.read_model.side_effect = Exception("Model not found")
+def test_extract_text_returns_empty_if_no_model() -> None:
+    with patch("translator.ocr.paddle.ort.InferenceSession") as mock_session:
+        # Mock InferenceSession to raise exception to simulate failure
+        mock_session.side_effect = Exception("Model not found")
         
         engine = PaddleOcrEngine()
         result = engine.extract_text(np.zeros((100, 100, 3), dtype=np.uint8))
-        assert "Error" in result or "not loaded" in result
+        assert result == ""
 
 
-@pytest.mark.openvino
-def test_openvino_model_loading() -> None:
+@pytest.mark.onnx
+def test_onnx_model_loading() -> None:
     # This test tries to actually load the model if it exists
     # If not, it should handle it gracefully
     engine = PaddleOcrEngine()
-    if engine._compiled_model:
-        import openvino as ov
-        assert isinstance(engine._compiled_model, ov.CompiledModel)
+    if engine._rec_session:
+        assert isinstance(engine._rec_session, ort.InferenceSession)
 
 def test_load_dict_yaml() -> None:
-    with patch("translator.ocr.paddle.ov.Core"):
+    with patch("translator.ocr.paddle.ort.InferenceSession"):
         # Mock settings to point to a .yml file
         with patch("translator.ocr.paddle.settings.get", return_value="dummy.yml"):
             with patch("pathlib.Path.exists", return_value=True):

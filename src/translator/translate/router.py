@@ -14,5 +14,5 @@ class TranslatorRouter:
         )
 
     def translate(self, text: str, target_language: str) -> str:
-        formatted = self._prompt.format_prompt(text, target_language)
-        return self._primary.translate(formatted, target_language)
+        # Pass raw text to the translator. The translator should handle formatting/prompting.
+        return self._primary.translate(text, target_language)

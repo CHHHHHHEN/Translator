@@ -33,7 +33,7 @@ class MonitorService(QObject):
         self._last_image: np.ndarray | None = None
         self._running = False
         self._target_lang = "zh"
-        self._interval = 0.2
+        self._interval = 1.0  # seconds
 
     def set_target_language(self, lang: str) -> None:
         self._target_lang = lang
@@ -59,6 +59,10 @@ class MonitorService(QObject):
     def stop_monitoring(self) -> None:
         self._running = False
 
+    def force_refresh(self) -> None:
+        """Force a re-scan on next loop iteration."""
+        self._last_image = None
+
     def _loop(self) -> None:
         logger.info("Monitor service started.")
         while self._running:
@@ -75,6 +79,10 @@ class MonitorService(QObject):
                     logger.debug("Change detected, running OCR...")
                     self._last_image = current_image
                     
+                    # Check if still monitoring before heavy OCR
+                    if not state.is_monitoring:
+                        continue
+
                     # 3. OCR
                     text = self._ocr_service.detect_text(current_image)
                     
@@ -83,6 +91,10 @@ class MonitorService(QObject):
                         state.last_ocr_text = text
                         self.text_detected.emit(text)
                         
+                        # Check if still monitoring before Translation
+                        if not state.is_monitoring:
+                            continue
+
                         # 4. Translate
                         translated = self._translate_service.translate(text, self._target_lang)
                         state.last_translated_text = translated
