@@ -65,3 +65,4 @@ ocr_models/
 # Application state
 *.log
 config.local.json
+config/user.yaml

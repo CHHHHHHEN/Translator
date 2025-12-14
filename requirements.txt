@@ -1,0 +1,12 @@
+# Core runtime dependencies
+PyQt6>=6.10.0
+mss>=6.2.0
+paddleocr>=2.6.0
+Pillow>=10.0.0
+rich>=13.3.0
+
+# Dev dependencies can be installed via `pip install -e .[dev]`
+# pytest>=7.0
+# pytest-qt>=4.2.0
+# flake8>=6
+# mypy>=1.11

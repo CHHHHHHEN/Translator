@@ -1,0 +1,59 @@
+title: Translator configuration schema
+version: 1
+properties:
+  logging:
+    type: object
+    properties:
+      level:
+        type: string
+      path:
+        type: string
+  capture:
+    type: object
+    properties:
+      auto_start:
+        type: boolean
+      region:
+        type: object
+        properties:
+          top:
+            type: integer
+          left:
+            type: integer
+          width:
+            type: integer
+          height:
+            type: integer
+      debounce_ms:
+        type: integer
+  ocr:
+    type: object
+    properties:
+      engine:
+        type: string
+      languages:
+        type: array
+        items:
+          type: string
+  translate:
+    type: object
+    properties:
+      primary:
+        type: string
+      fallback:
+        type: array
+        items:
+          type: string
+      prompt:
+        type: string
+  hotkeys:
+    type: object
+    pattern: ^[A-Za-z0-9+_-]+$
+  platform:
+    type: object
+    properties:
+      windows:
+        type: object
+        properties:
+          enable_virtual_desktop_support:
+            type: boolean

@@ -1,0 +1,29 @@
+logging:
+  level: INFO
+  path: dist/translator.log
+
+capture:
+  auto_start: true
+  region:
+    top: 0
+    left: 0
+    width: 640
+    height: 360
+  debounce_ms: 120
+
+ocr:
+  engine: paddle
+  languages: ["en", "zh"]
+
+translate:
+  primary: llm
+  fallback: ["google", "edge"]
+  prompt: compact
+
+hotkeys:
+  toggle_overlay: Ctrl+Alt+T
+  capture_region: Ctrl+Shift+C
+
+platform:
+  windows:
+    enable_virtual_desktop_support: true
