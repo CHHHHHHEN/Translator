@@ -1,0 +1,13 @@
+# Code Guidelines
+- Maintain consistent and unified naming conventions with precise, unambiguous semantics across all modules.
+- Write concise, high-value comments for all nontrivial logic, emphasizing the underlying rationale (“why”) instead of restating obvious implementation details (“what”).
+- Remove redundant logic and repetitive patterns; optimize code structure to enhance readability, maintainability, and computational efficiency.
+- Use `uv` for environment management, dependency installation, and reproducible workflow control.
+- Always execute scripts through `.venv/bin/python` (or the platform-equivalent path) to ensure the correct interpreter and dependency isolation.
+- Avoid running multiple terminals for the same project to prevent environment inconsistencies, resource contention, and unintended context divergence.
+- Keep functions short, cohesive, and single-purpose, following the single-responsibility principle.
+- Adopt a modular architecture: break large workflows into well-defined modules to enhance reusability, unit testing, and long-term maintainability.
+- Follow PEP 8 (or the team-approved style guide) for consistent formatting, including indentation, import order, naming patterns, and maximum line length.
+- Prefer structured logging over print statements; define log levels, message formats, and output locations for transparent and reproducible experiment tracking.
+- Enforce determinism wherever feasible: fix random seeds, document configurations, capture environment metadata, and record external dependencies for reproducible experiments.
+- Always reason from actual source code: when constructing or reviewing logic, inspect the real function definitions, trace how inputs propagate through each call, and verify transformations step by step instead of relying on historical assumptions, external documentation, or presumed behavior.

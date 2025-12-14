@@ -1,0 +1,15 @@
+[project]
+name = "translator"
+version = "0.1.0"
+description = "Game overlay OCR + LLM translator"
+authors = [{ name = "User" }]
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+	"PyQt6>=6.5.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0", "pytest-qt>=4.2.0"]
+
+
