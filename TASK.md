@@ -39,3 +39,80 @@
 ## 架构与扩展性考虑
 - 模块化、分层设计  
   将 GUI、输入监听、OCR、变化检测与翻译引擎解耦，便于独立测试、替换实现及后续功能扩展（如本地 LLM、缓存策略、多模型路由等）。
+
+# 项目文件结构
+translator/
+├── README.md
+├── pyproject.toml
+├── requirements.txt
+├── uv.lock                     # 目前保留原始 hatchlock 快照
+├── .gitignore
+├── assets/                     # 静态资源
+│   ├── icons/                  # 托盘/按钮图标
+│   ├── styles/                 # Qt QSS 样式
+│   └── i18n/                   # 可能的多语言字符串
+├── config/
+│   ├── default.yaml            # 默认配置
+│   ├── schema.yaml             # 可选配置结构定义
+│   └── user.yaml               # 机器专属覆盖（忽略提交）
+├── models/                     # 占位的模型/数据目录
+├── src/
+│   └── translator/
+│       ├── __init__.py
+│       ├── app.py               # Qt 应用生命周期
+│       ├── main.py              # 程序入口点
+│       ├── core/                # UI 无关的业务逻辑
+│       │   ├── __init__.py
+│       │   ├── state.py         # 全局状态
+│       │   ├── event_bus.py     # 事件总线
+│       │   └── scheduler.py     # 防抖/异步助手
+│       ├── ui/                  # Qt 视图层
+│       │   ├── __init__.py
+│       │   ├── main_window.py   # 主窗口
+│       │   ├── tray.py          # 托盘图标
+│       │   ├── overlay.py       # 翻译悬浮窗
+│       │   └── region_selector.py  # 框选组件
+│       ├── input/               # 用户输入 / 系统交互
+│       │   ├── __init__.py
+│       │   ├── hotkey.py        # 快捷键绑定
+│       │   ├── clipboard.py     # 剪贴板工具
+│       │   └── text_replace.py  # 文本替换策略
+│       ├── capture/             # 屏幕采集与变化检测
+│       │   ├── __init__.py
+│       │   ├── screen.py        # mss 屏幕截图
+│       │   ├── region.py        # 选区对象
+│       │   └── diff.py          # 内容变化检测
+│       ├── ocr/                 # OCR 抽象与实现
+│       │   ├── __init__.py
+│       │   ├── engine.py        # OCR 接口
+│       │   ├── paddle.py        # PaddleOCR stub
+│       │   └── preprocess.py    # 图像预处理
+│       ├── translate/           # 翻译引擎 & 模板
+│       │   ├── __init__.py
+│       │   ├── base.py          # 翻译抽象类
+│       │   ├── llm.py           # LLM 实现
+│       │   ├── prompt.py        # Prompt 模板
+│       │   └── router.py        # 路由/回退逻辑
+│       ├── services/            # 跨模块服务
+│       │   ├── __init__.py
+│       │   ├── translate_service.py
+│       │   ├── ocr_service.py
+│       │   └── monitor_service.py
+│       ├── utils/               # 通用工具
+│       │   ├── __init__.py
+│       │   ├── logger.py
+│       │   ├── timing.py
+│       │   └── exceptions.py
+│       └── platform/            # 平台特性
+│           ├── __init__.py
+│           └── windows.py       # Windows 特有逻辑
+├── tests/
+│   ├── __init__.py
+│   ├── test_ocr.py
+│   ├── test_translate.py
+│   ├── test_diff.py
+│   └── test_prompt.py
+├── scripts/
+│   ├── run_dev.py              # 开发模式启动
+│   └── build.py                # 打包脚本（PyInstaller）
+└── dist/                        # 构建产物（忽略提交）
