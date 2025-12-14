@@ -14,11 +14,18 @@ capture:
 ocr:
   engine: paddle
   languages: ["en", "zh"]
+  # Path to the vocabulary file. If not found, will use a minimal default.
+  rec_char_dict_path: "models/PP-OCRv5_mobile_rec_infer/inference.yml"
 
 translate:
   primary: llm
   fallback: ["google", "edge"]
   prompt: compact
+  llm:
+    api_key: "sk-xxxx" # Set via env var or user.yaml
+    base_url: "https://dashscope.aliyuncs.com/compatible-mode/v1"
+    model: "qwen-plus"
+    temperature: 0.3
 
 hotkeys:
   toggle_overlay: Ctrl+Alt+T
